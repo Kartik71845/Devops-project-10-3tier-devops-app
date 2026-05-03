@@ -1,0 +1,10 @@
+
+services:
+  backend:
+    image: kartik71845/backend:v10
+    container_name: backend
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    restart: always
