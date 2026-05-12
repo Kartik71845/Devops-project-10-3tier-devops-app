@@ -1,7 +1,9 @@
 services:
   frontend:
-    image: kartik71845/frontend:v10
+    image: <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/markmybook-frontend:v1
     container_name: frontend
+
+    restart: always
+
     ports:
       - "80:80"
-    restart: always
