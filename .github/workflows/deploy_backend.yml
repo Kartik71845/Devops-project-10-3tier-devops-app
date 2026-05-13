@@ -23,8 +23,8 @@ jobs:
       run: |
         aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 783490811281.dkr.ecr.us-east-1.amazonaws.com
         docker build -t backend:v1 ./backend
-        docker tag backend:v1 783490811281.dkr.ecr.us-east-1.amazonaws.com/backend:v1
-        docker push 783490811281.dkr.ecr.us-east-1.amazonaws.com/backend:v1
+        docker tag backend:v1 783490811281.dkr.ecr.us-east-1.amazonaws.com/3tier-app-repo:backend-v1
+        docker push 783490811281.dkr.ecr.us-east-1.amazonaws.com/3tier-app-repo:backend-v1
 
     - name: Deploy to EC2 using SSM
       run: |

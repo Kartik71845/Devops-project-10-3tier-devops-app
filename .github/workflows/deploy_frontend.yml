@@ -26,8 +26,8 @@ jobs:
           run: |
             aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 783490811281.dkr.ecr.us-east-1.amazonaws.com
             docker build -t frontend:v1 ./frontend
-            docker tag frontend:v1 783490811281.dkr.ecr.us-east-1.amazonaws.com/frontend:v1
-            docker push 783490811281.dkr.ecr.us-east-1.amazonaws.com/frontend:v1
+            docker tag frontend:v1 783490811281.dkr.ecr.us-east-1.amazonaws.com/3tier-app-repo:frontend-v1
+            docker push 783490811281.dkr.ecr.us-east-1.amazonaws.com/3tier-app-repo:frontend-v1
         
         - name: deploy to AWS EC2 instance
           uses: appleboy/ssh-action@master
