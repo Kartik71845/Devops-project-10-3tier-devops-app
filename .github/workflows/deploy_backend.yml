@@ -29,13 +29,15 @@ jobs:
     - name: Deploy to EC2 using SSM
       run: |
         aws ssm send-command \
-          --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
-          --document-name "AWS-RunShellScript" \
-          --parameters 'commands=[
-          "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 783490811281.dkr.ecr.us-east-1.amazonaws.com",
-          "cd /var/snap/amazon-ssm-agent/13009/backend",
-          "docker compose down || true",
-          "docker compose pull",
-          "docker compose up -d"
-          ]' \
-          --region us-east-1
+        --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
+        --document-name "AWS-RunShellScript" \
+        --parameters '{
+          "commands":[
+            "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 783490811281.dkr.ecr.us-east-1.amazonaws.com",
+            "cd /home/ubuntu/backend",
+            "docker compose down || true",
+            "docker compose pull",
+            "docker compose up -d"
+          ]
+        }' \
+        --region us-east-1
