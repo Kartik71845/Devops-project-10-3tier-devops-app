@@ -1,6 +1,6 @@
 services:
   frontend:
-    image: <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/markmybook-frontend:v1
+    image: 783490811281.dkr.ecr.us-east-1.amazonaws.com/frontend:v1
     container_name: frontend
 
     restart: always

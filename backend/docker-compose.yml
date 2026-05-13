@@ -1,6 +1,6 @@
 services:
   backend:
-    image: <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/backend:v1
+    image: 783490811281.dkr.ecr.us-east-1.amazonaws.com/backend:v1
 
     container_name: backend
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const API_URL = "http://3tier-lb-1355499934.us-east-1.elb.amazonaws.com"
+const API_URL = "http://3tier-app-alb-862090182.us-east-1.elb.amazonaws.com"
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token') || '');

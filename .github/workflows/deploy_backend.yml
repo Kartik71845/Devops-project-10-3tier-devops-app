@@ -15,21 +15,25 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-1
-    - name: login to ecr
-      uses: aws-actions/amazon-ecr-login@v1
+
 
     - name: docker build tag and push to AWS ECR
       run: |
+        aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 783490811281.dkr.ecr.us-east-1.amazonaws.com
         docker build -t backend:v1 ./backend
-        docker tag backend:v1 123456789012.dkr.ecr.us-east-1.amazonaws.com/backend:v1
-        docker push 123456789012.dkr.ecr.us-east-1.amazonaws.com/backend:v1
+        docker tag backend:v1 783490811281.dkr.ecr.us-east-1.amazonaws.com/backend:v1
+        docker push 783490811281.dkr.ecr.us-east-1.amazonaws.com/backend:v1
 
-    - name: deploy to AWS EC2 instance using ssm
-      uses: aws-actions/amazon-ssm-run-command@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
-        instance-ids: ${{ secrets.EC2_INSTANCE_ID }}
-        document-name: AWS-RunShellScript
-        parameters: commands="cd /home/ubuntu/backend && docker image prune -f && docker compose down || true && docker compose pull && docker compose up -d"
+    - name: Deploy to EC2 using SSM
+      run: |
+        aws ssm send-command \
+          --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
+          --document-name "AWS-RunShellScript" \
+          --parameters 'commands=[
+          "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 783490811281.dkr.ecr.us-east-1.amazonaws.com",
+          "cd /home/ubuntu/backend",
+          "docker compose down || true",
+          "docker compose pull",
+          "docker compose up -d"
+          ]' \
+          --region us-east-1

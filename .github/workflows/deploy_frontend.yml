@@ -18,14 +18,13 @@ jobs:
             aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
             aws-region: us-east-1
 
-        - name: login to ecr
-          id: login-ecr
-          uses: aws-actions/amazon-ecr-login@v1
+        
         - name: docker build tag and push to AWS ECR
           run: |
-            docker build -t --build-arg VITE_API_URL=http://localhost:5000/v1 -t frontend:v1 ./frontend
-            docker tag frontend:v1 123456789012.dkr.ecr.us-east-1.amazonaws.com/frontend:v1
-            docker push 123456789012.dkr.ecr.us-east-1.amazonaws.com/frontend:v1
+            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 783490811281.dkr.ecr.us-east-1.amazonaws.com
+            docker build -t --build-arg VITE_API_URL=http://3tier-app-alb-862090182.us-east-1.elb.amazonaws.com/ -t frontend:v1 ./frontend
+            docker tag frontend:v1 783490811281.dkr.ecr.us-east-1.amazonaws.com/frontend:v1
+            docker push 783490811281.dkr.ecr.us-east-1.amazonaws.com/frontend:v1
         
         - name: deploy to AWS EC2 instance
           uses: appleboy/ssh-action@master
@@ -34,6 +33,7 @@ jobs:
             username: ${{ secrets.EC2_USER }}
             key: ${{ secrets.EC2_SSH_KEY }}
             script: |
+              aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 783490811281.dkr.ecr.us-east-1.amazonaws.com
               cd /home/ubuntu/frontend
               docker image prune -f
               docker compose down || true
