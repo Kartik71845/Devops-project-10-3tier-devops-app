@@ -2,8 +2,11 @@ name: Frontend cicd
 
 on: 
   push:
-    paths:
-      - "frontend/**"
+    branches:
+      - test
+  
+    # paths:
+    #   - "frontend/**"
 
 jobs:
   frontend:
