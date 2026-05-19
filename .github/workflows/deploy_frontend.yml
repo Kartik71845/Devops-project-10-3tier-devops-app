@@ -8,6 +8,7 @@ on:
 jobs:
   frontend:
     runs-on: ubuntu-latest
+    
 
     steps:
         - uses: actions/checkout@v3
@@ -21,10 +22,11 @@ jobs:
         
         - name: docker build tag and push to AWS ECR
           run: |
+            TAG=$(GITHUB_SHA::8)
             aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 783490811281.dkr.ecr.us-east-1.amazonaws.com
-            docker build -t frontend:v1 ./frontend
-            docker tag frontend:v1 783490811281.dkr.ecr.us-east-1.amazonaws.com/3tier-app-repo:frontend-v1
-            docker push 783490811281.dkr.ecr.us-east-1.amazonaws.com/3tier-app-repo:frontend-v1
+            docker build -t frontend:${TAG} ./frontend
+            docker tag frontend:${TAG} 783490811281.dkr.ecr.us-east-1.amazonaws.com/3tier-app-repo:frontend-${TAG}
+            docker push 783490811281.dkr.ecr.us-east-1.amazonaws.com/3tier-app-repo:frontend-${TAG}
         
         - name: deploy to AWS EC2 instance
           uses: appleboy/ssh-action@master
@@ -34,8 +36,8 @@ jobs:
             key: ${{ secrets.EC2_SSH_KEY }}
             script: |
               aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 783490811281.dkr.ecr.us-east-1.amazonaws.com
-              cd /home/ubuntu/frontend
-              docker image prune -f
-              docker compose down || true
-              docker compose pull 
-              docker compose up -d
+              cd /home/ubuntu
+              docker pull 783490811281.dkr.ecr.us-east-1.amazonaws.com/3tier-app-repo:frontend-${TAG}
+              docker rm -rf frontend || true
+              docker run -d -p 80:80 --name frontend 783490811281.dkr.ecr.us-east-1.amazonaws.com/3tier-app-repo:frontend-${TAG}
+              

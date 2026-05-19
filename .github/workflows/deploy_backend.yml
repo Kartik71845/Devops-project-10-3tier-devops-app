@@ -1,10 +1,8 @@
 name: Backend cicd
 on:
   push:
-    branches:
-      - test
-    # paths:
-    #   - "backend/**"
+     paths:
+       - "backend/**"
 
 jobs: 
   backend:
@@ -21,10 +19,11 @@ jobs:
 
     - name: docker build tag and push to AWS ECR
       run: |
+        TAG=$(GITHUB_SHA::8)
         aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 783490811281.dkr.ecr.us-east-1.amazonaws.com
-        docker build -t backend:v1 ./backend
-        docker tag backend:v1 783490811281.dkr.ecr.us-east-1.amazonaws.com/3tier-app-repo:backend-v1
-        docker push 783490811281.dkr.ecr.us-east-1.amazonaws.com/3tier-app-repo:backend-v1
+        docker build -t backend:${TAG} ./backend
+        docker tag backend:${TAG} 783490811281.dkr.ecr.us-east-1.amazonaws.com/3tier-app-repo:backend-${TAG}
+        docker push 783490811281.dkr.ecr.us-east-1.amazonaws.com/3tier-app-repo:backend-${TAG}
 
     - name: Deploy to EC2 using SSM
       run: |
@@ -34,10 +33,10 @@ jobs:
         --parameters '{
           "commands":[
             "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 783490811281.dkr.ecr.us-east-1.amazonaws.com",
-            "cd /var/snap/amazon-ssm-agent/13009/backend",
-            "docker compose down || true",
-            "docker compose pull",
-            "docker compose up -d"
+            "cd /var/snap/amazon-ssm-agent/13009",
+            "docker pull 783490811281.dkr.ecr.us-east-1.amazonaws.com/3tier-app-repo:backend-${TAG}",
+            "docker rm -rf backend || true",
+            "docker run -d --env-file .env -p 5000:5000 --name backend 783490811281.dkr.ecr.us-east-1.amazonaws.com/3tier-app-repo:backend-${TAG}"
           ]
         }' \
         --region us-east-1
