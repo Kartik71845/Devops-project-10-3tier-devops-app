@@ -11,7 +11,7 @@ const users = [];
 const habits = [];
 const SECRET = 'secret123';
 
-app.post('/auth/signup', async (req, res) => {
+app.post('/api/auth/signup', async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) return res.status(400).json({ message: 'Email and password required' });
   const hashed = await bcrypt.hash(password, 10);
@@ -20,7 +20,7 @@ app.post('/auth/signup', async (req, res) => {
   res.status(201).json({ message: 'User created' });
 });
 
-app.post('/auth/login', async (req, res) => {
+app.post('/api/auth/login', async (req, res) => {
   const { email, password } = req.body;
   const user = users.find(u => u.email === email);
   if (!user) return res.status(401).json({ message: 'Invalid credentials' });
@@ -42,7 +42,7 @@ const authenticateToken = (req, res, next) => {
 };
 
 // CREATE HABIT: Now includes a 'history' array for dates
-app.post('/habits', authenticateToken, (req, res) => {
+app.post('/api/habits', authenticateToken, (req, res) => {
   const { name } = req.body;
   const habit = { id: Date.now().toString(), userId: req.user.id, name, history: [] };
   habits.push(habit);
@@ -50,13 +50,13 @@ app.post('/habits', authenticateToken, (req, res) => {
 });
 
 // GET HABITS
-app.get('/habits', authenticateToken, (req, res) => {
+app.get('/api/habits', authenticateToken, (req, res) => {
   const userHabits = habits.filter(h => h.userId === req.user.id);
   res.json(userHabits);
 });
 
 // MARK COMPLETE: Saves the current Date
-app.put('/habits/:id', authenticateToken, (req, res) => {
+app.put('/api/habits/:id', authenticateToken, (req, res) => {
   const habit = habits.find(h => h.id === req.params.id && h.userId === req.user.id);
   if (!habit) return res.sendStatus(404);
   
