@@ -22,9 +22,9 @@ jobs:
     - name: docker build tag and push to AWS ECR
       run: |
         aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 783490811281.dkr.ecr.us-east-1.amazonaws.com
-        docker build -t backend:v1 ./backend
-        docker tag backend:v1 783490811281.dkr.ecr.us-east-1.amazonaws.com/3tier-app-repo:backend:v1
-        docker push 783490811281.dkr.ecr.us-east-1.amazonaws.com/3tier-app-repo:backend:v1
+        docker build -t backend ./backend
+        docker tag backend 783490811281.dkr.ecr.us-east-1.amazonaws.com/3tier-app-repo:backend-v1
+        docker push 783490811281.dkr.ecr.us-east-1.amazonaws.com/3tier-app-repo:backend-v1
 
     - name: Deploy to EC2 using SSM
       run: |
@@ -35,9 +35,9 @@ jobs:
           "commands":[
             "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 783490811281.dkr.ecr.us-east-1.amazonaws.com",
             "cd /var/snap/amazon-ssm-agent/13009",
-            "docker pull 783490811281.dkr.ecr.us-east-1.amazonaws.com/3tier-app-repo:backend:v1",
+            "docker pull 783490811281.dkr.ecr.us-east-1.amazonaws.com/3tier-app-repo:backend-v1",
             "docker rm -rf backend || true",
-            "docker run -d --env-file .env -p 5000:5000 --name backend 783490811281.dkr.ecr.us-east-1.amazonaws.com/3tier-app-repo:backend:v1"
+            "docker run -d --env-file .env -p 5000:5000 --name backend 783490811281.dkr.ecr.us-east-1.amazonaws.com/3tier-app-repo:backend-v1"
           ]
         }' \
         --region us-east-1
