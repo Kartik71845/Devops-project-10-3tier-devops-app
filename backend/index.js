@@ -66,7 +66,7 @@ app.put('/habits/:id', authenticateToken, (req, res) => {
   }
   res.json(habit);
 });
-app.get('/health', (req, res) => {
+app.get('/api/health', (req, res) => {
   res.status(200).send('OK');
 });
 app.listen(5000, "0.0.0.0", () => console.log('Server running on 5000'));
