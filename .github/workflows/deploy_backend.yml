@@ -1,8 +1,10 @@
 name: Backend cicd
 on:
   push:
-     paths:
-       - "backend/**"
+    branches:
+      - main
+    paths:
+      - "backend/**"
 
 jobs: 
   backend:
