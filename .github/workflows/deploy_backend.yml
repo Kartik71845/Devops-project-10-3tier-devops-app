@@ -34,7 +34,7 @@ jobs:
         --parameters '{
           "commands":[
             "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 783490811281.dkr.ecr.us-east-1.amazonaws.com",
-            "docker prune -f",
+            "docker system prune -f",
             "docker stop backend || true",
             "docker rm -f backend || true",
             "docker pull 783490811281.dkr.ecr.us-east-1.amazonaws.com/3tier-app-repo:backend-v1",
