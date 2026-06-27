@@ -1,1 +1,2 @@
-docker-compose.yml
+docker-compose.yml 
+# that doesnt include the files and directories listed in .dockerignore
